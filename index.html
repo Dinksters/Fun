@@ -2,116 +2,296 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squad Chatroom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .chat-card { width: 95%; max-width: 400px; height: 85vh; background: #1e293b; display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); border: 1px solid #334155; }
-        .chat-header { background: #2563eb; padding: 16px; text-align: center; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #0f172a; }
-        .message { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; word-break: break-word; }
-        .message .sender { font-size: 0.75rem; font-weight: bold; color: #38bdf8; display: block; margin-bottom: 4px; }
-        .message.mine { background: #2563eb; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .message.theirs { background: #334155; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .chat-input { display: flex; padding: 12px; background: #1e293b; gap: 8px; border-top: 1px solid #334155; }
-        input { flex: 1; padding: 12px 16px; border: 1px solid #475569; border-radius: 30px; background: #0f172a; color: white; outline: none; font-size: 0.95rem; }
-        input:focus { border-color: #2563eb; }
-        button { background: #2563eb; border: none; padding: 0 22px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #1d4ed8; }
-        #setup-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #0f172a; display:flex; justify-content:center; align-items:center; z-index: 100; }
-        .setup-box { background: #1e293b; padding: 30px; border-radius: 16px; text-align: center; border: 1px solid #334155; width: 90%; max-width: 340px; }
-        .setup-box h3 { margin-bottom: 10px; }
-        .setup-box input { width: 100%; margin: 15px 0; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0b141a; color: #e9edef; }
+        
+        .app-container { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+
+        /* Left Side Panel - Chat List */
+        .sidebar { width: 30%; max-width: 400px; min-width: 300px; background-color: #111b21; border-right: 1px solid #222e35; display: flex; flex-direction: column; }
+        .sidebar-header { height: 60px; background-color: #202c33; display: flex; align-items: center; padding: 0 16px; justify-content: space-between; }
+        .profile-avatar { width: 40px; height: 40px; background-color: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-transform: uppercase; }
+        
+        .header-actions { color: #aebac1; font-size: 1.2rem; display: flex; gap: 18px; align-items: center; }
+        .add-btn { cursor: pointer; background: none; border: none; color: #00a884; font-size: 1.4rem; font-weight: bold; }
+        
+        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222e35; cursor: pointer; transition: 0.2s; }
+        .chat-item:hover { background-color: #202c33; }
+        .chat-item.active { background-color: #2a3942; }
+        .chat-item-info { margin-left: 15px; flex: 1; min-width: 0; }
+        .chat-item-title { font-size: 1rem; font-weight: 400; color: #e9edef; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-subtitle { font-size: 0.85rem; color: #8696a0; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Right Side Panel - Active Chat Frame */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background-color: #0b141a; background-image: linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
+        .chat-header { height: 60px; background-color: #202c33; display: flex; align-items: center; padding: 0 16px; border-left: 1px solid #222e35; }
+        .chat-header-info { margin-left: 15px; }
+        .chat-header-name { font-size: 1rem; font-weight: 500; }
+        .chat-header-status { font-size: 0.8rem; color: #8696a0; margin-top: 2px; }
+
+        /* Messages Window Stack */
+        .messages-area { flex: 1; padding: 20px 7%; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .msg-wrapper { display: flex; width: 100%; margin-bottom: 2px; }
+        .msg-wrapper.mine { justify-content: flex-end; }
+        .msg-wrapper.theirs { justify-content: flex-start; }
+        
+        .msg-bubble { max-width: 65%; padding: 6px 7px 8px 9px; border-radius: 7px; font-size: 0.9rem; line-height: 1.4; color: #e9edef; position: relative; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.15); display: inline-block; min-width: 80px; }
+        .msg-wrapper.mine .msg-bubble { background-color: #005c4b; border-top-right-radius: 0; padding-right: 60px; }
+        .msg-wrapper.theirs .msg-bubble { background-color: #202c33; border-top-left-radius: 0; padding-right: 60px; }
+        
+        .msg-meta { display: block; font-size: 0.8rem; color: #53bdeb; font-weight: 500; margin-bottom: 4px; }
+        .msg-wrapper.theirs .msg-meta { color: #53bdeb; }
+        .msg-text { word-break: break-word; }
+        
+        /* Message Details Layout (Time and Verification Checkmarks) */
+        .msg-time { position: absolute; bottom: 4px; right: 7px; font-size: 0.65rem; color: #8696a0; display: flex; align-items: center; gap: 3px; user-select: none; }
+        .msg-wrapper.mine .msg-time { color: #8696a0; }
+        .checkmark { color: #53bdeb; font-size: 0.75rem; font-weight: bold; }
+        .shared-img { max-width: 100%; max-height: 250px; border-radius: 6px; margin-top: 5px; display: block; }
+
+        /* Bottom Controls Sub-panel */
+        .input-panel { height: 62px; background-color: #202c33; display: flex; align-items: center; padding: 5px 15px; gap: 12px; }
+        .input-panel input { flex: 1; height: 42px; background-color: #2a3942; border: none; outline: none; border-radius: 8px; padding: 0 15px; color: #d1d7db; font-size: 0.95rem; }
+        .input-panel button { background-color: transparent; color: #8696a0; border: none; outline: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .input-panel button:hover { color: #aebac1; }
+        .input-panel .send-btn { background-color: transparent; color: #8696a0; width: auto; height: auto; font-size: 1.4rem; }
+        .input-panel .send-btn.active-send { color: #00a884; }
+
+        /* Setup Prompt Screen */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #111b21; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background-color: #222e35; padding: 40px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; }
+        .login-box h2 { color: #00a884; margin-bottom: 10px; font-weight: 400; }
+        .login-box input { width: 100%; height: 45px; background-color: #2a3942; border: 1px solid #3b4a54; border-radius: 6px; padding: 0 15px; color: white; text-align: center; margin: 20px 0; font-size: 1rem; outline: none; }
+        .login-box button { width: 100%; height: 45px; background-color: #00a884; color: #111b21; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; max-width: none; }
+            .main-chat { display: none; }
+            .app-container.chat-open .sidebar { display: none; }
+            .app-container.chat-open .main-chat { display: flex; }
+            #mobile-back-btn { display: block !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="setup-overlay">
-        <div class="setup-box">
-            <h3>Join Chatroom</h3>
-            <p style="color: #94a3b8; font-size: 0.85rem;">Enter your name to start</p>
-            <input type="text" id="name-field" placeholder="Your Name..." maxlength="15" onkeypress="if(event.key==='Enter') initChat()">
-            <button onclick="initChat()" style="padding: 12px 24px; width: 100%;">Enter Room</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>WhatsApp</h2>
+            <p style="color: #8696a0;">Enter your name to launch dashboard</p>
+            <input type="text" id="username-in" placeholder="Your Name..." maxlength="12" onkeypress="if(event.key==='Enter') enterWhatsApp()">
+            <button onclick="enterWhatsApp()">AGREE AND CONTINUE</button>
         </div>
     </div>
 
-    <div class="chat-card">
-        <div class="chat-header">⚡ Squad Chatroom</div>
-        <div class="chat-messages" id="chat-box"></div>
-        <div class="chat-input">
-            <input type="text" id="text-field" placeholder="Type a message..." onkeypress="if(event.key==='Enter') pushMsg()">
-            <button onclick="pushMsg()">Send</button>
+    <div class="app-container" id="app-viewport">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="profile-avatar" id="my-badge">?</div>
+                <div class="header-actions">
+                    <button class="add-btn" onclick="createNewGroup()" title="Create New Group">➕</button>
+                    <span>⚙️</span>
+                </div>
+            </div>
+            <div class="chat-list" id="group-list-container"></div>
+        </div>
+
+        <div class="main-chat">
+            <div class="chat-header">
+                <button onclick="closeActiveChat()" style="background:none; border:none; color:#aebac1; font-size:1.4rem; margin-right:12px; cursor:pointer; display:none;" id="mobile-back-btn">←</button>
+                <div class="profile-avatar" style="background-color: #00a884;" id="target-avatar">💬</div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="target-group-name">Select a Group</div>
+                    <div class="chat-header-status" id="target-status-sub">Choose a thread from the sidebar</div>
+                </div>
+            </div>
+
+            <div class="messages-area" id="chat-messages-container"></div>
+
+            <div class="input-panel">
+                <button onclick="sendImageLink()">📎</button>
+                <input type="text" id="chat-input-field" placeholder="Type a message" oninput="toggleSendIcon()" onkeypress="if(event.key==='Enter') transmitMsg(false)">
+                <button class="send-btn" id="send-btn-icon" onclick="transmitMsg(false)">🕊️</button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <script>
-        let myUser = "";
-        let pubnub;
-        const ROOM_CHANNEL = "squad_global_chat_2026"; 
+        let clientUser = "";
+        let pubnubInstance;
+        
+        let channelsState = [
+            { id: "whatsapp_global_main_hub", name: "Squad Main Hub", description: "Global group connection" },
+            { id: "whatsapp_gaming_lounge", name: "Gaming Lounge 🎮", description: "Gamers assembly zone" }
+        ];
+        let currentActiveChannel = "";
 
-        function initChat() {
-            const name = document.getElementById('name-field').value.trim();
-            if(!name) return;
-            myUser = name;
-            document.getElementById('setup-overlay').style.display = 'none';
+        if (localStorage.getItem('whatsapp_custom_groups')) {
+            channelsState = JSON.parse(localStorage.getItem('whatsapp_custom_groups'));
+        }
 
-            pubnub = new PubNub({
-                publishKey: 'demo', 
+        function enterWhatsApp() {
+            const parsedName = document.getElementById('username-in').value.trim();
+            if (!parsedName) return;
+            
+            clientUser = parsedName;
+            document.getElementById('my-badge').innerText = clientUser.charAt(0);
+            document.getElementById('login-overlay').style.display = 'none';
+
+            pubnubInstance = new PubNub({
+                publishKey: 'demo',
                 subscribeKey: 'demo',
-                userId: myUser
+                userId: clientUser
             });
 
-            // DATABASE: Fetch last 50 past messages from the storage vault when joining
-            pubnub.history({
-                channel: ROOM_CHANNEL,
-                count: 50,
+            pubnubInstance.addListener({
+                message: function(event) {
+                    if (event.channel === currentActiveChannel) {
+                        appendNode(event.message.user, event.message.text, event.message.isImage, event.message.time);
+                    }
+                }
+            });
+
+            renderSidebar();
+            switchActiveChannel(channelsState[0].id);
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('group-list-container');
+            container.innerHTML = "";
+
+            channelsState.forEach(channel => {
+                const item = document.createElement('div');
+                item.className = `chat-item ${channel.id === currentActiveChannel ? 'active' : ''}`;
+                item.onclick = () => switchActiveChannel(channel.id);
+                
+                item.innerHTML = `
+                    <div class="profile-avatar" style="background-color: #2a3942;">💬</div>
+                    <div class="chat-item-info">
+                        <div class="chat-item-title">${channel.name}</div>
+                        <div class="chat-item-subtitle">${channel.description}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function createNewGroup() {
+            const groupTitle = prompt("Enter new Group Name:");
+            if (!groupTitle) return;
+
+            const cleanId = "whatsapp_custom_room_" + Math.random().toString(36).substring(2, 9);
+            
+            channelsState.push({
+                id: cleanId,
+                name: groupTitle,
+                description: `Created by ${clientUser}`
+            });
+
+            localStorage.setItem('whatsapp_custom_groups', JSON.stringify(channelsState));
+            renderSidebar();
+            switchActiveChannel(cleanId);
+        }
+
+        function switchActiveChannel(targetId) {
+            if (currentActiveChannel) {
+                pubnubInstance.unsubscribe({ channels: [currentActiveChannel] });
+            }
+
+            currentActiveChannel = targetId;
+            const chosenChannel = channelsState.find(c => c.id === targetId);
+
+            document.getElementById('target-group-name').innerText = chosenChannel.name;
+            document.getElementById('target-status-sub').innerText = chosenChannel.description;
+            document.getElementById('chat-messages-container').innerHTML = "";
+
+            document.getElementById('app-viewport').classList.add('chat-open');
+            renderSidebar();
+
+            pubnubInstance.subscribe({ channels: [currentActiveChannel] });
+
+            pubnubInstance.history({
+                channel: currentActiveChannel,
+                count: 30,
                 stringifiedTimeToken: true
             }, function (status, response) {
                 if (response && response.messages) {
-                    response.messages.forEach(msg => {
-                        renderMessage(msg.entry.user, msg.entry.text);
+                    response.messages.forEach(packet => {
+                        appendNode(packet.entry.user, packet.entry.text, packet.entry.isImage, packet.entry.time);
                     });
                 }
             });
+        }
 
-            // Listen for any new messages coming in live
-            pubnub.addListener({
-                message: function(event) {
-                    renderMessage(event.message.user, event.message.text);
-                }
+        function closeActiveChat() {
+            document.getElementById('app-viewport').classList.remove('chat-open');
+        }
+
+        function toggleSendIcon() {
+            const val = document.getElementById('chat-input-field').value.trim();
+            const icon = document.getElementById('send-btn-icon');
+            if(val) {
+                icon.classList.add('active-send');
+                icon.innerText = "➔";
+            } else {
+                icon.classList.remove('active-send');
+                icon.innerText = "🕊️";
+            }
+        }
+
+        function transmitMsg(isImageFlag, targetText) {
+            const field = document.getElementById('chat-input-field');
+            const dataString = targetText || field.value.trim();
+            if (!dataString || !currentActiveChannel) return;
+
+            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            pubnubInstance.publish({
+                channel: currentActiveChannel,
+                message: { user: clientUser, text: dataString, isImage: isImageFlag, time: timeString }
             });
-
-            pubnub.subscribe({ channels: [ROOM_CHANNEL] });
+            if(!targetText) {
+                field.value = '';
+                toggleSendIcon();
+            }
         }
 
-        function pushMsg() {
-            const input = document.getElementById('text-field');
-            const messageText = input.value.trim();
-            if(!messageText) return;
-
-            pubnub.publish({
-                channel: ROOM_CHANNEL,
-                message: { user: myUser, text: messageText }
-            });
-            input.value = '';
+        function sendImageLink() {
+            const url = prompt("Paste your Image URL link here:");
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                transmitMsg(true, url);
+            }
         }
 
-        function renderMessage(sender, text) {
-            const box = document.getElementById('chat-box');
-            const el = document.createElement('div');
-            const isMe = sender === myUser;
+        function appendNode(sender, text, isImage, time) {
+            const container = document.getElementById('chat-messages-container');
+            const elementRow = document.createElement('div');
             
-            el.className = `message ${isMe ? 'mine' : 'theirs'}`;
-            el.innerHTML = `<span class="sender">${isMe ? 'You' : sender}</span>${escapeText(text)}`;
+            const checkMine = sender === clientUser;
+            elementRow.className = `msg-wrapper ${checkMine ? 'mine' : 'theirs'}`;
             
-            box.appendChild(el);
-            box.scrollTop = box.scrollHeight; 
+            let messageContent = isImage ? `<img src="${text}" class="shared-img" onerror="this.src='https://placehold.co/200?text=Invalid+Image+Url'"/>` : cleanseData(text);
+
+            elementRow.innerHTML = `
+                <div class="msg-bubble">
+                    <span class="msg-meta">${checkMine ? 'You' : sender}</span>
+                    <span class="msg-text">${messageContent}</span>
+                    <span class="msg-time">${time} ${checkMine ? '<span class="checkmark">✓✓</span>' : ''}</span>
+                </div>
+            `;
+            
+            container.appendChild(elementRow);
+            container.scrollTop = container.scrollHeight;
         }
 
-        function escapeText(str) {
-            return str.replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c] || c));
+        function cleanseData(raw) {
+            return raw.replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match] || match));
         }
     </script>
 </body>
