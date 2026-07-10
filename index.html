@@ -6,69 +6,88 @@
     <title>WhatsApp</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0b141a; color: #e9edef; }
         
+        /* THEME VARIABLES */
+        :root {
+            --bg-main: #0b141a; --bg-sidebar: #111b21; --bg-header: #202c33; --bg-active: #2a3942;
+            --border-color: #222e35; --text-primary: #e9edef; --text-secondary: #8696a0;
+            --bubble-mine: #005c4b; --bubble-theirs: #202c33; --input-bg: #2a3942;
+            --input-text: #d1d7db; --accent: #00a884; --sys-msg: #182229; --sys-text: #ffd279;
+        }
+        [data-theme="light"] {
+            --bg-main: #efeae2; --bg-sidebar: #ffffff; --bg-header: #f0f2f5; --bg-active: #ebebeb;
+            --border-color: #e1e1e1; --text-primary: #111b21; --text-secondary: #667781;
+            --bubble-mine: #d9fdd3; --bubble-theirs: #ffffff; --input-bg: #ffffff;
+            --input-text: #111b21; --accent: #008069; --sys-msg: #ffffff; --sys-text: #54656f;
+        }
+
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-main); color: var(--text-primary); transition: background 0.3s, color 0.3s; }
         .app-container { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
 
-        /* Left Side Panel - Chat List */
-        .sidebar { width: 30%; max-width: 400px; min-width: 300px; background-color: #111b21; border-right: 1px solid #222e35; display: flex; flex-direction: column; }
-        .sidebar-header { height: 60px; background-color: #202c33; display: flex; align-items: center; padding: 0 16px; justify-content: space-between; }
-        .profile-avatar { width: 40px; height: 40px; background-color: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-transform: uppercase; }
-        
-        .header-actions { color: #aebac1; font-size: 1.2rem; display: flex; gap: 18px; align-items: center; }
-        .add-btn { cursor: pointer; background: none; border: none; color: #00a884; font-size: 1.4rem; font-weight: bold; }
+        /* Sidebar UI */
+        .sidebar { width: 30%; max-width: 400px; min-width: 300px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .sidebar-header { height: 60px; background-color: var(--bg-header); display: flex; align-items: center; padding: 0 16px; justify-content: space-between; }
+        .profile-avatar { width: 40px; height: 40px; background-color: #53bdeb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; user-select: none; }
+        .header-actions { color: var(--text-secondary); font-size: 1.2rem; display: flex; gap: 15px; align-items: center; }
+        .action-icon { cursor: pointer; background: none; border: none; font-size: 1.2rem; padding: 5px; color: var(--text-secondary); }
+        .add-btn { color: var(--accent); font-size: 1.4rem; font-weight: bold; }
         
         .chat-list { flex: 1; overflow-y: auto; }
-        .chat-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #222e35; cursor: pointer; transition: 0.2s; }
-        .chat-item:hover { background-color: #202c33; }
-        .chat-item.active { background-color: #2a3942; }
+        .chat-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .chat-item:hover { background-color: var(--bg-header); }
+        .chat-item.active { background-color: var(--bg-active); }
         .chat-item-info { margin-left: 15px; flex: 1; min-width: 0; }
-        .chat-item-title { font-size: 1rem; font-weight: 400; color: #e9edef; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-item-subtitle { font-size: 0.85rem; color: #8696a0; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-title { font-size: 1rem; font-weight: 400; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Right Side Panel - Active Chat Frame */
-        .main-chat { flex: 1; display: flex; flex-direction: column; background-color: #0b141a; background-image: linear-gradient(rgba(11, 20, 26, 0.94), rgba(11, 20, 26, 0.94)), url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
-        .chat-header { height: 60px; background-color: #202c33; display: flex; align-items: center; padding: 0 16px; border-left: 1px solid #222e35; }
-        .chat-header-info { margin-left: 15px; }
+        /* Main Chat */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-main); background-image: linear-gradient(rgba(11,20,26,0.1), rgba(11,20,26,0.1)), url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
+        [data-theme="light"] .main-chat { background-image: linear-gradient(rgba(239,234,226,0.7), rgba(239,234,226,0.7)), url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
+        .chat-header { height: 60px; background-color: var(--bg-header); display: flex; align-items: center; padding: 0 16px; border-left: 1px solid var(--border-color); }
+        .chat-header-info { margin-left: 15px; flex: 1; }
         .chat-header-name { font-size: 1rem; font-weight: 500; }
-        .chat-header-status { font-size: 0.8rem; color: #8696a0; margin-top: 2px; }
+        .chat-header-status { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
 
-        /* Messages Window Stack */
-        .messages-area { flex: 1; padding: 20px 7%; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-        .msg-wrapper { display: flex; width: 100%; margin-bottom: 2px; }
+        /* Messages */
+        .messages-area { flex: 1; padding: 20px 7%; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .msg-wrapper { display: flex; width: 100%; }
         .msg-wrapper.mine { justify-content: flex-end; }
         .msg-wrapper.theirs { justify-content: flex-start; }
+        .msg-wrapper.system { justify-content: center; margin: 10px 0; }
         
-        .msg-bubble { max-width: 65%; padding: 6px 7px 8px 9px; border-radius: 7px; font-size: 0.9rem; line-height: 1.4; color: #e9edef; position: relative; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.15); display: inline-block; min-width: 80px; }
-        .msg-wrapper.mine .msg-bubble { background-color: #005c4b; border-top-right-radius: 0; padding-right: 60px; }
-        .msg-wrapper.theirs .msg-bubble { background-color: #202c33; border-top-left-radius: 0; padding-right: 60px; }
+        .msg-bubble { max-width: 65%; padding: 6px 7px 8px 9px; border-radius: 7px; font-size: 0.9rem; line-height: 1.4; color: var(--text-primary); position: relative; word-wrap: break-word; box-shadow: 0 1px 0.5px rgba(0,0,0,0.15); display: inline-block; min-width: 80px; }
+        .msg-wrapper.mine .msg-bubble { background-color: var(--bubble-mine); border-top-right-radius: 0; padding-right: 65px; }
+        .msg-wrapper.theirs .msg-bubble { background-color: var(--bubble-theirs); border-top-left-radius: 0; padding-right: 65px; }
+        .msg-wrapper.system .msg-bubble { background-color: var(--sys-msg); color: var(--sys-text); font-size: 0.8rem; border-radius: 6px; padding: 5px 12px; max-width: 90%; text-align: center; box-shadow: 0 1px 0.5px rgba(0,0,0,0.1); }
         
         .msg-meta { display: block; font-size: 0.8rem; color: #53bdeb; font-weight: 500; margin-bottom: 4px; }
-        .msg-wrapper.theirs .msg-meta { color: #53bdeb; }
-        .msg-text { word-break: break-word; }
-        
-        /* Message Details Layout (Time and Verification Checkmarks) */
-        .msg-time { position: absolute; bottom: 4px; right: 7px; font-size: 0.65rem; color: #8696a0; display: flex; align-items: center; gap: 3px; user-select: none; }
-        .msg-wrapper.mine .msg-time { color: #8696a0; }
+        [data-theme="light"] .msg-wrapper.mine .msg-meta { color: #008069; }
+        .msg-time { position: absolute; bottom: 4px; right: 7px; font-size: 0.65rem; color: var(--text-secondary); display: flex; align-items: center; gap: 3px; }
         .checkmark { color: #53bdeb; font-size: 0.75rem; font-weight: bold; }
         .shared-img { max-width: 100%; max-height: 250px; border-radius: 6px; margin-top: 5px; display: block; }
 
-        /* Bottom Controls Sub-panel */
-        .input-panel { height: 62px; background-color: #202c33; display: flex; align-items: center; padding: 5px 15px; gap: 12px; }
-        .input-panel input { flex: 1; height: 42px; background-color: #2a3942; border: none; outline: none; border-radius: 8px; padding: 0 15px; color: #d1d7db; font-size: 0.95rem; }
-        .input-panel button { background-color: transparent; color: #8696a0; border: none; outline: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .input-panel button:hover { color: #aebac1; }
-        .input-panel .send-btn { background-color: transparent; color: #8696a0; width: auto; height: auto; font-size: 1.4rem; }
-        .input-panel .send-btn.active-send { color: #00a884; }
+        /* Footer Input */
+        .input-panel { height: 62px; background-color: var(--bg-header); display: flex; align-items: center; padding: 5px 15px; gap: 12px; }
+        .input-panel input { flex: 1; height: 42px; background-color: var(--input-bg); border: none; outline: none; border-radius: 8px; padding: 0 15px; color: var(--input-text); font-size: 0.95rem; }
+        .input-panel button { background-color: transparent; color: var(--text-secondary); border: none; outline: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .input-panel .send-btn.active-send { color: var(--accent); }
 
-        /* Setup Prompt Screen */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #111b21; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background-color: #222e35; padding: 40px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; }
-        .login-box h2 { color: #00a884; margin-bottom: 10px; font-weight: 400; }
-        .login-box input { width: 100%; height: 45px; background-color: #2a3942; border: 1px solid #3b4a54; border-radius: 6px; padding: 0 15px; color: white; text-align: center; margin: 20px 0; font-size: 1rem; outline: none; }
-        .login-box button { width: 100%; height: 45px; background-color: #00a884; color: #111b21; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; }
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(11,20,26,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-box { background-color: #222e35; color: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        [data-theme="light"] .modal-box { background-color: #ffffff; color: #111b21; border: 1px solid #e1e1e1; }
+        
+        .modal-box h2, .modal-box h3 { color: var(--accent); margin-bottom: 15px; font-weight: 500; }
+        .modal-box input, .modal-box select { width: 100%; height: 42px; background-color: #2a3942; border: 1px solid #3b4a54; border-radius: 6px; padding: 0 15px; color: white; margin-bottom: 12px; font-size: 0.95rem; outline: none; }
+        [data-theme="light"] .modal-box input, [data-theme="light"] .modal-box select { background-color: #f0f2f5; color: #111b21; border: 1px solid #cccccc; }
+        
+        .modal-box button { width: 100%; height: 42px; background-color: var(--accent); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; margin-top: 5px; }
+        .close-modal { position: absolute; top: 12px; right: 15px; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary); }
+        .member-checklist { max-height: 120px; overflow-y: auto; text-align: left; margin: 10px 0; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; }
+        .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.9rem; }
+        .checklist-item input { width: auto; height: auto; margin: 0; }
+        .error-lbl { color: #ea0038; font-size: 0.85rem; margin-top: 10px; display: none; }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .sidebar { width: 100%; max-width: none; }
             .main-chat { display: none; }
@@ -80,31 +99,80 @@
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-box">
+    <!-- LOGIN MODAL -->
+    <div id="login-overlay" class="modal-overlay">
+        <div class="modal-box" style="text-align: center;">
             <h2>WhatsApp</h2>
-            <p style="color: #8696a0;">Enter your name to launch dashboard</p>
-            <input type="text" id="username-in" placeholder="Your Name..." maxlength="12" onkeypress="if(event.key==='Enter') enterWhatsApp()">
-            <button onclick="enterWhatsApp()">AGREE AND CONTINUE</button>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Secure Account Sign In</p>
+            <input type="text" id="username-in" placeholder="Username (e.g. admin)">
+            <input type="password" id="password-in" placeholder="Password (e.g. 123)" onkeypress="if(event.key==='Enter') enterWhatsApp()">
+            <button onclick="enterWhatsApp()">VERIFY & ENTER</button>
+            <div class="error-lbl" id="login-error">Incorrect Username or Password!</div>
         </div>
     </div>
 
+    <!-- PROFILE & SETTINGS MODAL -->
+    <div id="profile-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal('profile-modal')">✕</span>
+            <h3>Profile Settings</h3>
+            <p style="font-size:0.85rem; margin-bottom:5px; font-weight:bold;">Display Name:</p>
+            <input type="text" id="profile-display-name" placeholder="How others see you">
+            <p style="font-size:0.85rem; margin-bottom:5px; font-weight:bold; margin-top: 10px;">Theme Preference:</p>
+            <select id="profile-theme-select">
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+            </select>
+            <button onclick="saveProfile()" style="margin-top: 15px;">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD MODAL -->
+    <div id="admin-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal('admin-modal')">✕</span>
+            <h3>Admin Dashboard</h3>
+            <p style="font-size:0.85rem; margin-bottom:5px; font-weight:bold;">Add or Update User:</p>
+            <input type="text" id="admin-target-user" placeholder="Target Username (lowercase)">
+            <input type="password" id="admin-target-pass" placeholder="Target Password">
+            <button onclick="adminSaveUser()" style="margin-bottom:20px;">Save/Update User</button>
+            <p style="font-size:0.85rem; margin-bottom:5px; font-weight:bold;">Revoke User Access:</p>
+            <select id="admin-delete-select"></select>
+            <button onclick="adminDeleteUser()" style="background-color:#ea0038;">Delete Account</button>
+        </div>
+    </div>
+
+    <!-- NEW GROUP MODAL -->
+    <div id="group-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal('group-modal')">✕</span>
+            <h3>Create New Group</h3>
+            <input type="text" id="group-name-input" placeholder="Group Room Title...">
+            <p style="font-size:0.8rem; color:var(--text-secondary);">Select participants:</p>
+            <div class="member-checklist" id="member-checklist-box"></div>
+            <button onclick="confirmCreateNewGroup()">CREATE GROUP</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEWPORT -->
     <div class="app-container" id="app-viewport">
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <div class="profile-avatar" id="my-badge">?</div>
+                <div class="profile-avatar" id="my-badge" onclick="openProfileModal()" title="Profile Settings">?</div>
                 <div class="header-actions">
-                    <button class="add-btn" onclick="createNewGroup()" title="Create New Group">➕</button>
-                    <span>⚙️</span>
+                    <button class="action-icon add-btn" onclick="openGroupModal()" title="Create Group">➕</button>
+                    <button class="action-icon" id="admin-gear" style="display:none;" onclick="openAdminModal()" title="Admin Panel">⚙️</button>
                 </div>
             </div>
             <div class="chat-list" id="group-list-container"></div>
         </div>
 
+        <!-- Chat Area -->
         <div class="main-chat">
             <div class="chat-header">
-                <button onclick="closeActiveChat()" style="background:none; border:none; color:#aebac1; font-size:1.4rem; margin-right:12px; cursor:pointer; display:none;" id="mobile-back-btn">←</button>
-                <div class="profile-avatar" style="background-color: #00a884;" id="target-avatar">💬</div>
+                <button onclick="closeActiveChat()" style="background:none; border:none; color:var(--text-secondary); font-size:1.4rem; margin-right:12px; cursor:pointer; display:none;" id="mobile-back-btn">←</button>
+                <div class="profile-avatar" style="background-color: var(--accent);" id="target-avatar">💬</div>
                 <div class="chat-header-info">
                     <div class="chat-header-name" id="target-group-name">Select a Group</div>
                     <div class="chat-header-status" id="target-status-sub">Choose a thread from the sidebar</div>
@@ -114,89 +182,111 @@
             <div class="messages-area" id="chat-messages-container"></div>
 
             <div class="input-panel">
-                <button onclick="sendImageLink()">📎</button>
+                <button onclick="sendImageLink()" title="Attach Image">📎</button>
                 <input type="text" id="chat-input-field" placeholder="Type a message" oninput="toggleSendIcon()" onkeypress="if(event.key==='Enter') transmitMsg(false)">
                 <button class="send-btn" id="send-btn-icon" onclick="transmitMsg(false)">🕊️</button>
             </div>
         </div>
     </div>
 
+    <!-- PUBNUB SDK -->
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
     <script>
-        let clientUser = "";
-        let pubnubInstance;
-        
-        let channelsState = [
-            { id: "whatsapp_global_main_hub", name: "Squad Main Hub", description: "Global group connection" },
-            { id: "whatsapp_gaming_lounge", name: "Gaming Lounge 🎮", description: "Gamers assembly zone" }
+        // Default Registry Database
+        let SYSTEM_USERS = [
+            { username: "admin", pass: "123", displayName: "Administrator", theme: "dark" },
+            { username: "alex",  pass: "pass", displayName: "Alex", theme: "dark" },
+            { username: "sam",   pass: "squad", displayName: "Sam", theme: "dark" }
         ];
+
+        let channelsState = [
+            { id: "wa_hub_01", name: "Squad Main Hub", description: "Global connection window", members: ["admin", "alex", "sam"] }
+        ];
+        
+        let activeUser = null; // Holds full user object
+        let pubnubInstance;
         let currentActiveChannel = "";
 
-        if (localStorage.getItem('whatsapp_custom_groups')) {
-            channelsState = JSON.parse(localStorage.getItem('whatsapp_custom_groups'));
+        // Load Persistent Data
+        if (localStorage.getItem('wa_max_users')) {
+            SYSTEM_USERS = JSON.parse(localStorage.getItem('wa_max_users'));
+        } else {
+            localStorage.setItem('wa_max_users', JSON.stringify(SYSTEM_USERS));
         }
 
+        if (localStorage.getItem('wa_max_channels')) {
+            channelsState = JSON.parse(localStorage.getItem('wa_max_channels'));
+        }
+
+        // --- AUTH & INIT ---
         function enterWhatsApp() {
-            const parsedName = document.getElementById('username-in').value.trim();
-            if (!parsedName) return;
+            const uName = document.getElementById('username-in').value.trim().toLowerCase();
+            const uPass = document.getElementById('password-in').value;
+            const errorLabel = document.getElementById('login-error');
+
+            const matchedUser = SYSTEM_USERS.find(u => u.username === uName && u.pass === uPass);
+
+            if (!matchedUser) {
+                errorLabel.style.display = 'block';
+                return;
+            }
+
+            errorLabel.style.display = 'none';
+            activeUser = matchedUser;
             
-            clientUser = parsedName;
-            document.getElementById('my-badge').innerText = clientUser.charAt(0);
+            // Apply User Settings
+            document.getElementById('my-badge').innerText = activeUser.displayName.charAt(0);
+            document.documentElement.setAttribute('data-theme', activeUser.theme || 'dark');
             document.getElementById('login-overlay').style.display = 'none';
 
+            // Show admin gear if admin
+            if (activeUser.username === 'admin') {
+                document.getElementById('admin-gear').style.display = 'inline-block';
+            }
+
+            // Init PubNub
             pubnubInstance = new PubNub({
                 publishKey: 'demo',
                 subscribeKey: 'demo',
-                userId: clientUser
+                userId: activeUser.username
             });
 
             pubnubInstance.addListener({
                 message: function(event) {
                     if (event.channel === currentActiveChannel) {
-                        appendNode(event.message.user, event.message.text, event.message.isImage, event.message.time);
+                        appendNode(event.message.user, event.message.displayName, event.message.text, event.message.isImage, event.message.time, event.message.isSystem);
                     }
                 }
             });
 
             renderSidebar();
-            switchActiveChannel(channelsState[0].id);
+            
+            // Auto-load first available chat
+            const initialGroup = channelsState.find(c => c.members.includes(activeUser.username));
+            if (initialGroup) switchActiveChannel(initialGroup.id);
         }
 
+        // --- SIDEBAR & NAVIGATION ---
         function renderSidebar() {
             const container = document.getElementById('group-list-container');
             container.innerHTML = "";
 
             channelsState.forEach(channel => {
+                if (!channel.members.includes(activeUser.username)) return;
+
                 const item = document.createElement('div');
                 item.className = `chat-item ${channel.id === currentActiveChannel ? 'active' : ''}`;
                 item.onclick = () => switchActiveChannel(channel.id);
                 
                 item.innerHTML = `
-                    <div class="profile-avatar" style="background-color: #2a3942;">💬</div>
+                    <div class="profile-avatar" style="background-color: var(--accent);">💬</div>
                     <div class="chat-item-info">
-                        <div class="chat-item-title">${channel.name}</div>
-                        <div class="chat-item-subtitle">${channel.description}</div>
+                        <div class="chat-item-title">${escapeData(channel.name)}</div>
+                        <div class="chat-item-subtitle">${escapeData(channel.description)}</div>
                     </div>
                 `;
                 container.appendChild(item);
             });
-        }
-
-        function createNewGroup() {
-            const groupTitle = prompt("Enter new Group Name:");
-            if (!groupTitle) return;
-
-            const cleanId = "whatsapp_custom_room_" + Math.random().toString(36).substring(2, 9);
-            
-            channelsState.push({
-                id: cleanId,
-                name: groupTitle,
-                description: `Created by ${clientUser}`
-            });
-
-            localStorage.setItem('whatsapp_custom_groups', JSON.stringify(channelsState));
-            renderSidebar();
-            switchActiveChannel(cleanId);
         }
 
         function switchActiveChannel(targetId) {
@@ -216,33 +306,146 @@
 
             pubnubInstance.subscribe({ channels: [currentActiveChannel] });
 
+            // Fetch History
             pubnubInstance.history({
                 channel: currentActiveChannel,
-                count: 30,
+                count: 40,
                 stringifiedTimeToken: true
             }, function (status, response) {
                 if (response && response.messages) {
                     response.messages.forEach(packet => {
-                        appendNode(packet.entry.user, packet.entry.text, packet.entry.isImage, packet.entry.time);
+                        const msg = packet.entry;
+                        appendNode(msg.user, msg.displayName || msg.user, msg.text, msg.isImage, msg.time, msg.isSystem);
                     });
                 }
             });
         }
 
-        function closeActiveChat() {
-            document.getElementById('app-viewport').classList.remove('chat-open');
+        // --- PROFILE LOGIC ---
+        function openProfileModal() {
+            document.getElementById('profile-display-name').value = activeUser.displayName;
+            document.getElementById('profile-theme-select').value = activeUser.theme || 'dark';
+            document.getElementById('profile-modal').style.display = 'flex';
         }
 
+        function saveProfile() {
+            const newName = document.getElementById('profile-display-name').value.trim();
+            const newTheme = document.getElementById('profile-theme-select').value;
+            
+            if(!newName) return alert("Display name cannot be empty.");
+
+            activeUser.displayName = newName;
+            activeUser.theme = newTheme;
+
+            // Update in DB
+            const userIndex = SYSTEM_USERS.findIndex(u => u.username === activeUser.username);
+            if(userIndex > -1) SYSTEM_USERS[userIndex] = activeUser;
+            
+            localStorage.setItem('wa_max_users', JSON.stringify(SYSTEM_USERS));
+            
+            // Apply immediately
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('my-badge').innerText = newName.charAt(0);
+            
+            closeModal('profile-modal');
+        }
+
+        // --- ADMIN LOGIC ---
+        function openAdminModal() {
+            document.getElementById('admin-modal').style.display = 'flex';
+            const sel = document.getElementById('admin-delete-select');
+            sel.innerHTML = "";
+            SYSTEM_USERS.forEach(u => {
+                if (u.username === 'admin') return; 
+                sel.innerHTML += `<option value="${u.username}">${u.username} (${u.displayName})</option>`;
+            });
+        }
+
+        function adminSaveUser() {
+            const uName = document.getElementById('admin-target-user').value.trim().toLowerCase();
+            const uPass = document.getElementById('admin-target-pass').value.trim();
+            if (!uName || !uPass) return alert("Fill in username and password!");
+
+            const matchIndex = SYSTEM_USERS.findIndex(u => u.username === uName);
+            if (matchIndex > -1) {
+                SYSTEM_USERS[matchIndex].pass = uPass;
+                alert(`Password updated for: ${uName}`);
+            } else {
+                SYSTEM_USERS.push({ username: uName, pass: uPass, displayName: uName, theme: "dark" });
+                alert(`New account created for: ${uName}`);
+            }
+
+            localStorage.setItem('wa_max_users', JSON.stringify(SYSTEM_USERS));
+            document.getElementById('admin-target-user').value = "";
+            document.getElementById('admin-target-pass').value = "";
+            openAdminModal(); 
+        }
+
+        function adminDeleteUser() {
+            const target = document.getElementById('admin-delete-select').value;
+            if (!target) return;
+            if (confirm(`Revoke account access for: ${target}?`)) {
+                SYSTEM_USERS = SYSTEM_USERS.filter(u => u.username !== target);
+                localStorage.setItem('wa_max_users', JSON.stringify(SYSTEM_USERS));
+                alert("Account deleted.");
+                openAdminModal();
+            }
+        }
+
+        // --- GROUP LOGIC ---
+        function openGroupModal() {
+            document.getElementById('group-modal').style.display = 'flex';
+            const checklist = document.getElementById('member-checklist-box');
+            checklist.innerHTML = "";
+            
+            SYSTEM_USERS.forEach(u => {
+                const checked = u.username === activeUser.username ? "checked disabled" : "";
+                checklist.innerHTML += `
+                    <div class="checklist-item">
+                        <input type="checkbox" value="${u.username}" id="chk-${u.username}" ${checked}>
+                        <label for="chk-${u.username}">${u.displayName} (@${u.username})</label>
+                    </div>`;
+            });
+        }
+
+        function confirmCreateNewGroup() {
+            const title = document.getElementById('group-name-input').value.trim();
+            if (!title) return;
+
+            const selectedUsers = [];
+            SYSTEM_USERS.forEach(u => {
+                const box = document.getElementById(`chk-${u.username}`);
+                if (box && (box.checked || box.disabled)) selectedUsers.push(u.username);
+            });
+
+            const uniqueRoomId = "wa_custom_" + Math.random().toString(36).substring(2, 9);
+            
+            channelsState.push({
+                id: uniqueRoomId,
+                name: title,
+                description: `${selectedUsers.length} members`,
+                members: selectedUsers
+            });
+
+            localStorage.setItem('wa_max_channels', JSON.stringify(channelsState));
+            document.getElementById('group-name-input').value = "";
+            closeModal('group-modal');
+            renderSidebar();
+            switchActiveChannel(uniqueRoomId);
+            
+            // Send system message to new room
+            pubnubInstance.publish({
+                channel: uniqueRoomId,
+                message: { user: 'SYS', text: `${activeUser.displayName} created this group.`, isSystem: true }
+            });
+        }
+
+        // --- MESSAGING LOGIC ---
         function toggleSendIcon() {
             const val = document.getElementById('chat-input-field').value.trim();
             const icon = document.getElementById('send-btn-icon');
-            if(val) {
-                icon.classList.add('active-send');
-                icon.innerText = "➔";
-            } else {
-                icon.classList.remove('active-send');
-                icon.innerText = "🕊️";
-            }
+            icon.innerText = val ? "➔" : "🕊️";
+            if(val) icon.classList.add('active-send'); else icon.classList.remove('active-send');
         }
 
         function transmitMsg(isImageFlag, targetText) {
@@ -254,45 +457,58 @@
 
             pubnubInstance.publish({
                 channel: currentActiveChannel,
-                message: { user: clientUser, text: dataString, isImage: isImageFlag, time: timeString }
+                message: { 
+                    user: activeUser.username, 
+                    displayName: activeUser.displayName, 
+                    text: dataString, 
+                    isImage: isImageFlag, 
+                    time: timeString,
+                    isSystem: false
+                }
             });
-            if(!targetText) {
-                field.value = '';
-                toggleSendIcon();
-            }
+            if(!targetText) { field.value = ''; toggleSendIcon(); }
         }
 
         function sendImageLink() {
             const url = prompt("Paste your Image URL link here:");
-            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-                transmitMsg(true, url);
-            }
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) transmitMsg(true, url);
         }
 
-        function appendNode(sender, text, isImage, time) {
+        function appendNode(senderId, senderName, text, isImage, time, isSystem) {
             const container = document.getElementById('chat-messages-container');
             const elementRow = document.createElement('div');
             
-            const checkMine = sender === clientUser;
+            if (isSystem) {
+                elementRow.className = "msg-wrapper system";
+                elementRow.innerHTML = `<div class="msg-bubble">${escapeData(text)}</div>`;
+                container.appendChild(elementRow);
+                container.scrollTop = container.scrollHeight;
+                return;
+            }
+
+            const checkMine = senderId === activeUser.username;
             elementRow.className = `msg-wrapper ${checkMine ? 'mine' : 'theirs'}`;
             
-            let messageContent = isImage ? `<img src="${text}" class="shared-img" onerror="this.src='https://placehold.co/200?text=Invalid+Image+Url'"/>` : cleanseData(text);
+            let messageContent = isImage ? `<img src="${escapeData(text)}" class="shared-img" onerror="this.src='https://placehold.co/200?text=Invalid+Image'"/>` : escapeData(text);
 
             elementRow.innerHTML = `
                 <div class="msg-bubble">
-                    <span class="msg-meta">${checkMine ? 'You' : sender}</span>
+                    <span class="msg-meta">${checkMine ? 'You' : escapeData(senderName)}</span>
                     <span class="msg-text">${messageContent}</span>
                     <span class="msg-time">${time} ${checkMine ? '<span class="checkmark">✓✓</span>' : ''}</span>
                 </div>
             `;
-            
             container.appendChild(elementRow);
             container.scrollTop = container.scrollHeight;
         }
 
-        function cleanseData(raw) {
+        function escapeData(raw) {
+            if(!raw) return "";
             return raw.replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match] || match));
         }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeActiveChat() { document.getElementById('app-viewport').classList.remove('chat-open'); }
     </script>
 </body>
 </html>
