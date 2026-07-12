@@ -689,6 +689,7 @@
                 <h1>Meme Evaluator</h1>
                 <p class="subtitle">Submit a joke, quote, or meme concept to see if our advanced AI thinks it's funny!</p>
                 
+                <!-- Hidden password field for secret phrase -->
                 <input type="password" id="meme-input" placeholder="Type a funny joke or meme..." onkeypress="if(event.key==='Enter') evaluateMeme()">
                 <button onclick="evaluateMeme()">EVALUATE JOKE</button>
                 <div class="fake-result" id="meme-result"></div>
@@ -718,6 +719,7 @@
     ========================================================= -->
     <div id="view-admin" class="view-container">
         
+        <!-- Dashboard Rail -->
         <div class="nav-rail">
             <div class="nav-icon" title="Logout" onclick="logout()">🚪</div>
         </div>
@@ -730,6 +732,7 @@
             
             <div class="dashboard-grid">
                 
+                <!-- Gateway Configuration (Styled like reference) -->
                 <div class="data-card gateway-card">
                     <h3>Gateway Configuration</h3>
                     <label>Secret Bypass Keyphrase</label>
@@ -737,6 +740,7 @@
                     <button onclick="saveSecretPhrase()" style="background:#101820; color:white; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:600;">Save Configuration</button>
                 </div>
 
+                <!-- Database Tools -->
                 <div class="data-card">
                     <h3>Database Backup Tools</h3>
                     <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom: 20px; line-height:1.4;">
@@ -749,6 +753,7 @@
                     </div>
                 </div>
 
+                <!-- Users Grid -->
                 <div class="data-card" style="grid-column: 1 / -1;">
                     <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                         <h3>Active Users Network Registry</h3>
@@ -768,10 +773,11 @@
     ========================================================= -->
     <div id="view-chat" class="view-container">
         
+        <!-- Leftmost Navigation Rail -->
         <div class="nav-rail">
             <div class="nav-icon active" title="Chats">💬</div>
-            <div class="nav-icon" title="Voice Channels" onclick="alert('Calls module offline.')">📞</div>
-            <div class="nav-icon" title="Broadcasts" onclick="alert('Status module offline.')">⭕</div>
+            <div class="nav-icon" title="Voice Channels" onclick="openFeature('Voice Channels', 'End-to-End Encrypted Voice Nodes are currently being provisioned.', '📞')">📞</div>
+            <div class="nav-icon" title="Broadcasts" onclick="openFeature('Status Broadcasts', 'Encrypted status broadcast nodes are syncing.', '⭕')">⭕</div>
             <div class="nav-spacer"></div>
             <div class="nav-icon" onclick="openGroupModal()" title="New Group Room">➕</div>
             <div class="nav-icon" id="btn-return-admin" style="display:none;" onclick="switchView('view-admin')" title="Admin Panel Dashboard">⚙️</div>
@@ -779,14 +785,16 @@
             <div class="profile-avatar" id="rail-avatar" onclick="openProfileModal()" style="width:35px; height:35px; font-size:1rem; margin-bottom:10px;">?</div>
         </div>
 
+        <!-- Sidebar / Contact List -->
         <div class="sidebar">
             <div class="sidebar-header" style="align-items: center; display: flex;">
+                <!-- Smooth back button for Admin Master Mode -->
                 <button class="sidebar-back-btn" id="sidebar-back-btn" onclick="clearSpyTarget()">←</button>
                 <h2 id="sidebar-title">Chats</h2>
             </div>
             
             <div class="search-bar">
-                <input type="text" placeholder="Search or start new chat">
+                <input type="text" id="chat-search" placeholder="Search or start new chat" oninput="filterSidebar(this.value)">
             </div>
             
             <div class="chat-list" id="sidebar-list">
@@ -794,8 +802,10 @@
             </div>
         </div>
 
+        <!-- Messaging Viewport -->
         <div class="main-chat" id="main-chat-window">
             
+            <!-- Idle / Empty State -->
             <div class="empty-state" id="empty-state">
                 <div class="empty-icon">💬</div>
                 <div class="empty-title">WhatsApp System</div>
@@ -803,8 +813,10 @@
                 <div class="empty-footer">🔒 End-to-end data pipelines active.</div>
             </div>
 
+            <!-- Active Chat Interface -->
             <div class="chat-container" id="chat-container">
                 
+                <!-- Drag and Drop Full Screen Overlay -->
                 <div class="drag-overlay" id="drag-overlay">
                     <h1 style="font-size:4rem;">🖼️</h1>
                     <h2>Drop payload image to send</h2>
@@ -821,22 +833,37 @@
                     </div>
                 </div>
 
-                <div class="messages-area" id="chat-messages-container"></div>
+                <div class="messages-area" id="chat-messages-container">
+                    <!-- Messages go here -->
+                </div>
 
                 <div class="input-panel">
                     
+                    <!-- Advanced Attachment Grid -->
                     <div class="attach-popup" id="attach-popup">
-                        <div class="attach-item" onclick="document.getElementById('image-upload-input').click()"><div class="attach-icon icon-file">📁</div>File</div>
-                        <div class="attach-item" onclick="document.getElementById('image-upload-input').click()"><div class="attach-icon icon-photo">🖼️</div>Photos</div>
-                        <div class="attach-item" onclick="alert('Module inactive')"><div class="attach-icon icon-poll">📊</div>Poll</div>
-                        <div class="attach-item" onclick="alert('Module inactive')"><div class="attach-icon icon-event">📅</div>Event</div>
-                        <div class="attach-item" onclick="alert('Module inactive')"><div class="attach-icon icon-ai">✨</div>AI Tool</div>
-                        <div class="attach-item" onclick="alert('Module inactive')"><div class="attach-icon icon-contact">👤</div>Contact</div>
+                        <div class="attach-item" onclick="document.getElementById('image-upload-input').click()">
+                            <div class="attach-icon icon-file">📁</div>File
+                        </div>
+                        <div class="attach-item" onclick="document.getElementById('image-upload-input').click()">
+                            <div class="attach-icon icon-photo">🖼️</div>Photos
+                        </div>
+                        <div class="attach-item" onclick="sendPoll()">
+                            <div class="attach-icon icon-poll">📊</div>Poll
+                        </div>
+                        <div class="attach-item" onclick="sendEvent()">
+                            <div class="attach-icon icon-event">📅</div>Event
+                        </div>
+                        <div class="attach-item" onclick="sendAITool()">
+                            <div class="attach-icon icon-ai">✨</div>AI Tool
+                        </div>
+                        <div class="attach-item" onclick="sendContact()">
+                            <div class="attach-icon icon-contact">👤</div>Contact
+                        </div>
                     </div>
 
                     <input type="file" id="image-upload-input" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
                     
-                    <button onclick="toggleAttachmentMenu()">📎</button>
+                    <button id="attach-btn" onclick="toggleAttachmentMenu()">📎</button>
                     <input type="text" id="chat-input-field" placeholder="Write message..." oninput="toggleSendIcon()" onkeypress="if(event.key==='Enter') transmitMsg(false)">
                     <button class="send-btn" id="send-btn-icon" style="background:none; border:none;" onclick="transmitMsg(false)">🕊️</button>
                 </div>
@@ -852,6 +879,17 @@
     <div id="custom-context-menu" class="context-menu">
         <div class="context-item" id="ctx-rename" onclick="handleContextRename()">✏️ Edit Contact Name</div>
         <div class="context-item danger" onclick="handleContextHide()">🗑️ Hide Chat</div>
+    </div>
+
+    <!-- Placeholder Feature Modal -->
+    <div id="feature-modal" class="modal-overlay">
+        <div class="modal-box" style="text-align:center;">
+            <span class="close-modal" onclick="closeModal('feature-modal')">✕</span>
+            <h3 id="feature-title">Feature</h3>
+            <p id="feature-desc" style="color:var(--text-secondary); margin-top:10px;">Initializing...</p>
+            <div style="margin: 20px 0; font-size: 3rem;" id="feature-icon">⚙️</div>
+            <button class="btn-primary" onclick="closeModal('feature-modal')">ACKNOWLEDGE</button>
+        </div>
     </div>
 
     <!-- Edit Personal Profile -->
@@ -888,7 +926,7 @@
             <span class="close-modal" onclick="closeModal('rename-contact-modal')">✕</span>
             <h3>Apply Local Signature Rename</h3>
             <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:15px;">
-                This will override the display name only on your local screen.
+                This will override the default display name only on your local screen interface.
             </p>
             <input type="text" id="rename-input" placeholder="Alias Name...">
             <button class="btn-primary" onclick="saveContactRename()">SAVE OVERRIDE</button>
@@ -913,7 +951,7 @@
             </div>
 
             <div style="text-align: left;">
-                <label>Members</label>
+                <label>Members / Details</label>
                 <div class="member-checklist" id="details-members-list">
                     <!-- Members populated here -->
                 </div>
@@ -972,10 +1010,22 @@
         let GLOBAL_REGISTRY = {
             users: [
                 { 
-                    uid: ADMIN_UID, loginId: "admin", pass: "123", displayName: "Administrator", theme: "dark", avatar: "", contacts: {} 
+                    uid: ADMIN_UID, 
+                    loginId: "admin", 
+                    pass: "123", 
+                    displayName: "Administrator", 
+                    theme: "dark", 
+                    avatar: "", 
+                    contacts: {} 
                 },
                 { 
-                    uid: "uid_demo_1", loginId: "alex", pass: "pass", displayName: "Alex", theme: "dark", avatar: "", contacts: {} 
+                    uid: "uid_demo_1", 
+                    loginId: "alex", 
+                    pass: "pass", 
+                    displayName: "Alex", 
+                    theme: "dark", 
+                    avatar: "", 
+                    contacts: {} 
                 }
             ],
             groups: [],
@@ -1001,7 +1051,7 @@
         // System Configuration Master Keys
         const PUBNUB_PUBLISH_KEY = 'demo'; 
         const PUBNUB_SUBSCRIBE_KEY = 'demo';
-        const CLOUD_CHANNEL = "system_master_database_vault_v6";
+        const CLOUD_CHANNEL = "system_master_database_vault_v7"; // Updated version channel
         
         const bootstrapper = new PubNub({ 
             publishKey: PUBNUB_PUBLISH_KEY, 
@@ -1017,8 +1067,8 @@
             }, function (status, response) {
                 if (response && response.messages && response.messages.length > 0) {
                     GLOBAL_REGISTRY = response.messages[0].entry;
-                } else if (localStorage.getItem('wa_db_fallback_v6')) {
-                    GLOBAL_REGISTRY = JSON.parse(localStorage.getItem('wa_db_fallback_v6'));
+                } else if (localStorage.getItem('wa_db_fallback_v7')) {
+                    GLOBAL_REGISTRY = JSON.parse(localStorage.getItem('wa_db_fallback_v7'));
                 }
                 
                 // Data Migration / Fallbacks for new fields
@@ -1032,14 +1082,17 @@
         }
 
         function syncCloudDatabase() {
-            localStorage.setItem('wa_db_fallback_v6', JSON.stringify(GLOBAL_REGISTRY));
+            localStorage.setItem('wa_db_fallback_v7', JSON.stringify(GLOBAL_REGISTRY));
             bootstrapper.publish({ 
                 channel: CLOUD_CHANNEL, 
                 message: GLOBAL_REGISTRY 
             });
         }
 
-        pullCloudDatabase(() => { resetInactivityTimer(); });
+        // Initialize application bootstrap pipeline
+        pullCloudDatabase(() => { 
+            resetInactivityTimer(); 
+        });
 
 
         // --- 6.2 View Routing & Timer Logic ---
@@ -1105,7 +1158,9 @@
                 err.style.display = 'none'; 
                 activeUser = matched;
                 
-                if(!activeUser.contacts) activeUser.contacts = {};
+                if(!activeUser.contacts) {
+                    activeUser.contacts = {};
+                }
                 
                 document.documentElement.setAttribute('data-theme', activeUser.theme || 'dark');
                 applyAvatarToElement('rail-avatar', activeUser);
@@ -1244,7 +1299,13 @@
                 }
                 const newUid = "uid_" + Date.now();
                 GLOBAL_REGISTRY.users.push({ 
-                    uid: newUid, loginId: lId, pass: pass, displayName: disp, theme: "dark", avatar: "", contacts: {} 
+                    uid: newUid, 
+                    loginId: lId, 
+                    pass: pass, 
+                    displayName: disp, 
+                    theme: "dark", 
+                    avatar: "", 
+                    contacts: {} 
                 });
             }
             
@@ -1273,6 +1334,20 @@
             }
             const u = GLOBAL_REGISTRY.users.find(x => x.uid === targetUid);
             return u ? u.displayName : "External Vector";
+        }
+
+        // Search Filter for Sidebar
+        function filterSidebar(query) {
+            query = query.toLowerCase();
+            const items = document.querySelectorAll('#sidebar-list .chat-item');
+            items.forEach(item => {
+                const title = item.querySelector('.chat-item-title').innerText.toLowerCase();
+                if(title.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         // Setup Context Menu Events
@@ -1318,8 +1393,11 @@
         }
 
         // Hide Context Menu
-        document.addEventListener('click', () => {
-            document.getElementById('custom-context-menu').style.display = 'none';
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('custom-context-menu');
+            if(!menu.contains(e.target)) {
+                menu.style.display = 'none';
+            }
         });
 
         function handleContextRename() {
@@ -1327,25 +1405,40 @@
                 activeChannelTargetUid = currentContextTarget.split("_").pop(); // Get UID from end of dmId string
                 openRenameModal();
             }
+            document.getElementById('custom-context-menu').style.display = 'none';
         }
 
         function handleContextHide() {
-            alert("Chat hidden! (Refresh to restore). To fully implement, we would flag this channel in activeUser data.");
+            alert("Chat visually hidden. (Refresh to restore).");
+            document.getElementById('custom-context-menu').style.display = 'none';
         }
 
-        // Render Sidebar Lists
+        // Feature Modal Trigger (For inactive buttons)
+        function openFeature(title, desc, icon) {
+            document.getElementById('feature-title').innerText = title;
+            document.getElementById('feature-desc').innerText = desc;
+            document.getElementById('feature-icon').innerText = icon;
+            openModal('feature-modal');
+        }
+
+        // Main Sidebar Rendering Function
         function renderChatSidebar() {
             const list = document.getElementById('sidebar-list'); 
             const titleNode = document.getElementById('sidebar-title');
             const backBtn = document.getElementById('sidebar-back-btn');
             
+            // Ultra-smooth transition for sidebar redrawing
             list.style.opacity = 0;
             
             setTimeout(() => {
                 list.innerHTML = "";
 
+                // ----------------------------------------------------
                 // ADVANCED SURVEILLANCE MODE (ADMIN ONLY)
+                // ----------------------------------------------------
                 if (masterAdminMode) {
+                    
+                    // State 1: Choose a Target to Monitor
                     if (!adminSpyTargetUid) {
                         titleNode.innerText = "Select Target Node";
                         backBtn.style.display = "none";
@@ -1372,19 +1465,26 @@
                         });
                         
                         list.style.opacity = 1;
-                        return; 
+                        return; // Stop rendering
                     } 
+                    
+                    // State 2: Target Selected - Show their streams
                     else {
                         const targetUser = GLOBAL_REGISTRY.users.find(u => u.uid === adminSpyTargetUid);
+                        
                         titleNode.innerText = "Intercepting: " + targetUser.displayName;
                         backBtn.style.display = "block";
 
-                        list.innerHTML += `<div class="section-label" style="color:#ea0038;">Monitored DMs</div>`;
+                        const labelDM = document.createElement('div');
+                        labelDM.className = "section-label";
+                        labelDM.style.color = "#ea0038";
+                        labelDM.innerText = "Monitored DMs";
+                        list.appendChild(labelDM);
 
+                        // Render DMs for Target
                         GLOBAL_REGISTRY.users.forEach(u => {
                             if (u.uid === adminSpyTargetUid) return;
                             
-                            // Deterministic String formulation
                             const dmArr = [adminSpyTargetUid, u.uid].sort();
                             const dmId = "dm_" + dmArr.join("_");
                             
@@ -1397,38 +1497,56 @@
                             let avHtml = u.avatar ? `<div class="profile-avatar" style="background-image:url('${escapeHTML(u.avatar)}')"></div>` 
                                                   : `<div class="profile-avatar" style="background-color:#ea0038;">${escapeHTML(u.displayName.charAt(0))}</div>`;
                             
-                            item.innerHTML = `${avHtml}<div class="chat-item-info"><div class="chat-item-title">${escapeHTML(u.displayName)}</div></div>`;
+                            item.innerHTML = `
+                                ${avHtml}
+                                <div class="chat-item-info">
+                                    <div class="chat-item-title">${escapeHTML(u.displayName)}</div>
+                                </div>
+                            `;
                             list.appendChild(item);
                         });
 
-                        list.innerHTML += `<div class="section-label" style="color:#ea0038; margin-top:10px;">Monitored Groups</div>`;
+                        const labelGroup = document.createElement('div');
+                        labelGroup.className = "section-label";
+                        labelGroup.style.color = "#ea0038";
+                        labelGroup.style.marginTop = "10px";
+                        labelGroup.innerText = "Monitored Groups";
+                        list.appendChild(labelGroup);
 
+                        // Render Groups for Target
                         GLOBAL_REGISTRY.groups.forEach(g => {
                             if (g.members.includes(adminSpyTargetUid)) {
                                 const item = document.createElement('div');
                                 item.className = `chat-item ${g.id === activeChannelId ? 'active' : ''}`;
                                 
-                                item.onclick = () => switchChannel(g.id, `Intercepting Group: ${g.name}`, g.avatar, `Monitored Stream`, null);
+                                item.onclick = () => switchChannel(g.id, `Intercepting Group: ${g.name}`, "", `Monitored Stream`, null);
                                 attachContextMenu(item, 'group', g.id);
-
-                                let avHtml = g.avatar ? `<div class="profile-avatar" style="background-image:url('${escapeHTML(g.avatar)}')"></div>` 
-                                                      : `<div class="profile-avatar" style="background-color:#ea0038;">👥</div>`;
-
-                                item.innerHTML = `${avHtml}<div class="chat-item-info"><div class="chat-item-title">${escapeHTML(g.name)}</div></div>`;
+                                
+                                item.innerHTML = `
+                                    <div class="profile-avatar" style="background-color: #ea0038;">👥</div>
+                                    <div class="chat-item-info">
+                                        <div class="chat-item-title">${escapeHTML(g.name)}</div>
+                                    </div>
+                                `;
                                 list.appendChild(item);
                             }
                         });
                         
                         list.style.opacity = 1;
-                        return;
+                        return; // Stop normal rendering
                     }
                 }
 
+                // ----------------------------------------------------
                 // NORMAL USER MODE
+                // ----------------------------------------------------
                 titleNode.innerText = "Chats";
                 backBtn.style.display = "none";
                 
-                list.innerHTML += `<div class="section-label">Direct Streams</div>`;
+                const labelDM = document.createElement('div');
+                labelDM.className = "section-label";
+                labelDM.innerText = "Direct Streams";
+                list.appendChild(labelDM);
                 
                 GLOBAL_REGISTRY.users.forEach(u => {
                     if (u.uid === activeUser.uid) return;
@@ -1446,11 +1564,21 @@
                     let avHtml = u.avatar ? `<div class="profile-avatar" style="background-image:url('${escapeHTML(u.avatar)}')"></div>` 
                                           : `<div class="profile-avatar">${escapeHTML(dispName.charAt(0))}</div>`;
                     
-                    item.innerHTML = `${avHtml}<div class="chat-item-info"><div class="chat-item-title">${escapeHTML(dispName)}</div></div>`;
+                    item.innerHTML = `
+                        ${avHtml}
+                        <div class="chat-item-info">
+                            <div class="chat-item-title">${escapeHTML(dispName)}</div>
+                        </div>
+                    `;
                     list.appendChild(item);
                 });
 
-                list.innerHTML += `<div class="section-label" style="margin-top:10px;">Multiplex Groups</div>`;
+                const labelGroup = document.createElement('div');
+                labelGroup.className = "section-label";
+                labelGroup.style.marginTop = "10px";
+                labelGroup.innerText = "Multiplex Groups";
+                list.appendChild(labelGroup);
+
                 GLOBAL_REGISTRY.groups.forEach(g => {
                     if (g.members.includes(activeUser.uid)) {
                         const item = document.createElement('div');
@@ -1462,7 +1590,12 @@
                         let avHtml = g.avatar ? `<div class="profile-avatar" style="background-image:url('${escapeHTML(g.avatar)}')"></div>` 
                                               : `<div class="profile-avatar" style="background-color: var(--accent);">👥</div>`;
 
-                        item.innerHTML = `${avHtml}<div class="chat-item-info"><div class="chat-item-title">${escapeHTML(g.name)}</div></div>`;
+                        item.innerHTML = `
+                            ${avHtml}
+                            <div class="chat-item-info">
+                                <div class="chat-item-title">${escapeHTML(g.name)}</div>
+                            </div>
+                        `;
                         list.appendChild(item);
                     }
                 });
@@ -1519,7 +1652,6 @@
         function openChatDetails() {
             if(!activeChannelId) return;
 
-            const modal = document.getElementById('chat-details-modal');
             const av = document.getElementById('details-avatar');
             const name = document.getElementById('details-name');
             const sub = document.getElementById('details-sub');
@@ -1546,7 +1678,7 @@
                 }
 
                 // Add Option to rename in this list
-                list.innerHTML = `<button class="btn-primary" onclick="closeModal('chat-details-modal'); openRenameModal();">Edit Contact Name</button>`;
+                list.innerHTML = `<button class="btn-primary" onclick="closeModal('chat-details-modal'); openRenameModal();">Edit Local Contact Name</button>`;
 
             } else {
                 // It's a Group
@@ -1658,10 +1790,19 @@
         }
 
 
-        // --- 6.10 Attachments & Image Compression ---
+        // --- 6.10 Attachments & Functional Modules ---
         function toggleAttachmentMenu() { 
             document.getElementById('attach-popup').classList.toggle('active'); 
         }
+
+        // Close attachment menu if clicked outside
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('attach-popup');
+            const btn = document.getElementById('attach-btn');
+            if (popup && popup.classList.contains('active') && !popup.contains(e.target) && !btn.contains(e.target)) {
+                popup.classList.remove('active');
+            }
+        });
         
         function handleFileSelect(event) { 
             document.getElementById('attach-popup').classList.remove('active'); 
@@ -1669,6 +1810,56 @@
                 processAndSendImage(event.target.files[0]); 
             }
             event.target.value = ''; 
+        }
+
+        // Advanced Functional Modules
+        function sendPoll() {
+            document.getElementById('attach-popup').classList.remove('active');
+            const q = prompt("Enter Poll Question:");
+            if (q) {
+                transmitMsg(false, `📊 **POLL:** ${q}\n👍 Yes\n👎 No\n🤔 Maybe\n\n*(Reply to vote)*`);
+            }
+        }
+
+        function sendEvent() {
+            document.getElementById('attach-popup').classList.remove('active');
+            const name = prompt("Enter Event Name:");
+            if(name) {
+                const time = prompt("Enter Time and Date:");
+                if (time) {
+                    transmitMsg(false, `📅 **NEW EVENT:** ${name}\n⏰ ${time}\n📍 TBD`);
+                }
+            }
+        }
+
+        function sendContact() {
+            document.getElementById('attach-popup').classList.remove('active');
+            const c = prompt("Enter Contact Name to share:");
+            if(c) {
+                transmitMsg(false, `👤 **CONTACT CARD:**\nName: ${c}\n*Tap to message*`);
+            }
+        }
+
+        function sendAITool() {
+            document.getElementById('attach-popup').classList.remove('active');
+            const promptStr = prompt("Enter a prompt for the AI Tool:");
+            if(promptStr) {
+                transmitMsg(false, `✨ **AI Query:** ${promptStr}`);
+                
+                // Simulate AI typing and response
+                setTimeout(() => {
+                    pubnubInstance.publish({
+                        channel: activeChannelId,
+                        message: { 
+                            userUid: 'SYS', 
+                            text: `🤖 **AI Response:** I'm a simulated AI model. You asked about "${promptStr}". Here is your generated completion!`, 
+                            isImg: false, 
+                            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 
+                            sys: true 
+                        }
+                    });
+                }, 1500);
+            }
         }
 
         // Drag/Drop Hooks
@@ -1791,6 +1982,7 @@
             const isMe = senderUid === activeUser.uid; 
             row.className = `msg-wrapper ${isMe ? 'mine' : 'theirs'}`;
             
+            // Allow Admin spying to clearly see who sent the message
             let dispName = isMe ? 'You' : getLocalDisplayName(senderUid);
             if (masterAdminMode) {
                 const globalData = GLOBAL_REGISTRY.users.find(x => x.uid === senderUid);
@@ -1802,7 +1994,7 @@
             row.innerHTML = `
                 <div class="msg-bubble">
                     <span class="msg-meta">${escapeHTML(dispName)}</span>
-                    <div>${content}</div>
+                    <div style="white-space: pre-wrap;">${content}</div>
                     <span class="msg-time">${time} ${isMe ? '<span class="checkmark">✓✓</span>' : ''}</span>
                 </div>
             `;
